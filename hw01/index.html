@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="./css/app.css">
+    <title>ReactJS Todo App</title>
+</head>
+
+<body>
+    <div id="root"></div>
+</body>
+<script type="text/babel">
+    const lsKey = 'LS_JOBS';
+    class JobApp extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                text: "",
+                message: "",
+                messageClass: "",
+                editing: false,
+                edit_id: 0,
+                jobs: this.getJobs()
+            };
+            this.addOrUpdateJob = this.addOrUpdateJob.bind(this);
+            this.cancel = this.cancel.bind(this);
+            this.newJobTxt = this.newJobTxt.bind(this);
+        }
+
+        getJobs() {
+            try {
+                return JSON.parse(localStorage.getItem(lsKey)) || []
+            } catch (e) {}
+            return [];
+        }
+
+        saveJobs() {
+            localStorage.setItem(lsKey, JSON.stringify(this.state.jobs));
+        }
+
+        addOrUpdateJob() {
+            let jobs = this.state.jobs;
+            if (this.state.text.length === 0) {
+                this.showMessage("Please enter the job you want to add new!", "error");
+                return false;
+            }
+            if (this.state.editing && this.state.edit_id >= 0) {
+                jobs[this.state.edit_id].name = this.state.text;
+                this.showMessage("Job ID: " + jobs[this.state.edit_id].id + " is updated!", "success");
+            } else {
+                let job = {id: Date.now(), name: this.state.text};
+                jobs.push(job);
+                this.showMessage("Your new job was added!", "success");
+            }
+            this.setState({
+                jobs: jobs,
+                text: '',
+                editing: false,
+                edit_id: 0,
+            });
+            this.saveJobs();
+        }
+
+        cancel() {
+            this.setState({
+                text: '',
+                editing: false,
+                edit_id: 0,
+            });
+        }
+
+        deleteJob(id) {
+            const deleteIndex = this.state.jobs.findIndex(job => job.id === id);
+            if(deleteIndex < 0) {
+                this.showMessage("Job ID: " + id + " not exits to delete!", "error");
+                return false;
+            }
+            let deleteJobs = this.state.jobs;
+            deleteJobs.splice(deleteIndex, 1);
+            this.showMessage("Job ID: " + id + " is deleted!", "success");
+            this.setState({
+                jobs: deleteJobs
+            });
+            this.saveJobs();
+        }
+
+        editJob(id) {
+            const editIndex = this.state.jobs.findIndex(job => job.id === id);
+            if(editIndex < 0) {
+                this.showMessage("Job ID: " + id + " not exits to edit!", "error");
+                return false;
+            }
+            this.setState({
+                editing: true,
+                edit_id: editIndex,
+            });
+            this.state.text = this.state.jobs[editIndex].name;
+        }
+
+        newJobTxt(e) {
+            this.setState({
+                text: e.target.value,
+            });
+        }
+        
+        showMessage(message, messageClass) {
+            this.setState({
+                message: message,
+                messageClass: messageClass,
+            });
+            setTimeout(() => this.setState({
+                message: '',
+                messageClass: ''
+            }), 2000);
+        }
+
+        render() {
+            return (
+                <section className="container">
+                    <h1 className="title">Jobs List</h1>
+                    <div className="input-button">
+                        <input
+                            name="job"
+                            placeholder="Name"
+                            value={this.state.text}
+                            onChange={this.newJobTxt}
+                        />
+                        <button onClick={this.addOrUpdateJob}>{this.state.editing === true ? 'Update' : 'Add'}</button>
+                        <button className="btn-cancel" onClick={this.cancel}>Cancel</button>
+                    </div>
+                    {this.state.message && <p className={this.state.messageClass}>{this.state.message}</p>}
+                    <div className="table-jobs">
+                    {
+                        this.state.jobs.length === 0 
+                        ? 
+                            <p className="text-center">The list of jobs is empty.</p>
+                        :
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Job Name</td>
+                                    <td>Actions</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {this.state.jobs.map((job, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{job.name}</td>
+                                        <td>
+                                            <button className="btn-edit" onClick={() => { this.editJob(job.id) }}>Edit</button>
+                                            <button className="btn-delete" onClick={() => { this.deleteJob(job.id) }}>Delete</button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                            </tbody>
+                        </table>
+                    }
+                    </div>
+                </section>
+            );
+        }
+    }
+    ReactDOM.render(<JobApp />, document.getElementById("root"));
+</script>
+</html>

@@ -1,0 +1,122 @@
+body {
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+  background-color: #f5f6f7;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.container {
+	max-width: 1440px;
+	padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.text-center {
+	text-align: center;
+}
+
+h1.title {
+  text-align: center;
+  font-weight: 600;
+  color: #363a40;
+  font-size: 35px;
+  margin-bottom: 35px;
+}
+
+input {
+  font-size: 1.4rem;
+  font-weight: 300;
+  outline: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+
+.input-button {
+  display: flex;
+  width: 100%;
+  background-color: #eee;
+}
+
+.input-button input {
+  width: 100%;
+  flex: 1;
+  padding: 0.5rem;
+  background-color: transparent;
+}
+
+.input-button button {
+  background-color: #08aeea;
+  color: white;
+  padding: 0.5rem 2rem;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+}
+
+.input-button button.btn-cancel {
+  background-color: #da0707;
+  color: rgb(0, 0, 0);
+  padding: 0.5rem 2rem;
+}
+.table-jobs {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+tr {
+  border-bottom: 1px solid #e6e9ec;
+}
+
+th {
+  text-align: left;
+  font-weight: 400;
+  padding: 0.5rem;
+  white-space: nowrap;
+}
+
+td {
+  vertical-align: middle;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  font-weight: normal;
+}
+
+td button {
+	width: 5rem;
+  	padding: 0.5rem;
+  	color: white;
+  	text-align: center;
+  	cursor: pointer;
+  	border: 0;
+  	outline: none;
+}
+
+.btn-edit {
+  background-color: #81c91d;
+  margin-right: 0.3rem;
+}
+
+.btn-delete {
+  background-color: #ff0000;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
