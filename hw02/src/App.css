@@ -120,3 +120,17 @@ td button {
 .success {
   color: green;
 }
+
+.counter {
+    margin: 0 -20px -10px -20px;
+    padding: 12px 20px;
+    position: relative;
+    color: #777;
+    text-align: center;
+    font-size: 19px;
+}
+
+.counter .number {
+    font-size: 25px;
+    color: red;
+}

@@ -2,6 +2,9 @@
 
 Check the demo hosted on heroku https://reactjs-hw02.herokuapp.com/.
 
+# Sample API dummy data
+
+https://jsonplaceholder.typicode.com/todos
 
 ## Instructions
 

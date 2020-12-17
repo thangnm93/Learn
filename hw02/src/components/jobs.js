@@ -3,14 +3,15 @@ import InputBox from './input';
 import Button from './button';
 import Message from './message';
 import JobsList from './jobs_list';
+import Counter from './counter';
+import { loadJobs, createJob, getJob, updateJob, deleteJob } from '../services/jobs'
 
-const lsKey = 'LS_JOBS';
 class Jobs extends Component {
     constructor(props) {
         super(props);
         this.state = {
             txt: '',
-            jobs: this.getJobs(),
+            jobs: [],
             editing: false,
             edit_id: 0,
             message: '',
@@ -20,16 +21,11 @@ class Jobs extends Component {
         this.onChangeTxt = this.onChangeTxt.bind(this);
         this.cancel = this.cancel.bind(this);
         this.editJob = this.editJob.bind(this);
-        this.deleteJob = this.deleteJob.bind(this);
+        this.handleDeleteJob = this.handleDeleteJob.bind(this);
     }
-    getJobs() {
-        try {
-            return JSON.parse(localStorage.getItem(lsKey)) || []
-        } catch (e) {}
-        return [];
-    }
-    saveJobs() {
-        localStorage.setItem(lsKey, JSON.stringify(this.state.jobs));
+
+    componentDidMount() {
+        loadJobs().then((jobs) => this.setState({jobs}));
     }
 
     onChangeTxt(e) {
@@ -37,19 +33,26 @@ class Jobs extends Component {
             txt: e.target.value
         });
     }
+    
     addOrUpdateJob() {
         let jobs = this.state.jobs;
-        if (this.state.txt.length === 0) {
+        let text = this.state.txt;
+        if (text.length === 0) {
             this.showMessage("Please enter the job you want to add new!", "error");
             return false;
         }
         if (this.state.editing && this.state.edit_id >= 0) {
-            jobs[this.state.edit_id].name = this.state.txt;
-            this.showMessage("Job ID: " + jobs[this.state.edit_id].id + " is updated!", "success");
+            updateJob(this.state.edit_id, {title: text}).then(() => {
+                this.showMessage("Job ID: " + jobs[this.state.edit_id].id + " is updated!", "success");
+            });
+            const editIndex = jobs.findIndex(job => job.id === this.state.edit_id);
+            jobs[editIndex].title = text;
         } else {
-            let job = {id: Date.now(), name: this.state.txt};
+            let job = {userId: 1, id: Date.now(), title: text, completed: false};
+            createJob(job).then(() => {
+                this.showMessage("Your new job was added!", "success");
+            });
             jobs.push(job);
-            this.showMessage("Your new job was added!", "success");
         }
         this.setState({
             jobs: jobs,
@@ -57,8 +60,8 @@ class Jobs extends Component {
             editing: false,
             edit_id: 0,
         });
-        this.saveJobs();
     }
+
     cancel() {
         this.setState({
             txt: '',
@@ -66,6 +69,7 @@ class Jobs extends Component {
             edit_id: 0,
         });
     }
+
     showMessage(message, messageClass) {
         this.setState({
             message: message,
@@ -76,31 +80,28 @@ class Jobs extends Component {
             messageClass: ''
         }), 2000);
     }
-    deleteJob(id) {
+
+    handleDeleteJob(id) {
         const deleteIndex = this.state.jobs.findIndex(job => job.id === id);
         if(deleteIndex < 0) {
             this.showMessage("Job ID: " + id + " not exits to delete!", "error");
             return false;
         }
+        deleteJob(id);
         let deleteJobs = this.state.jobs;
         deleteJobs.splice(deleteIndex, 1);
-        this.showMessage("Job ID: " + id + " is deleted!", "success");
         this.setState({
             jobs: deleteJobs
         });
-        this.saveJobs();
     }
 
     editJob(id) {
-        const editIndex = this.state.jobs.findIndex(job => job.id === id);
-        if(editIndex < 0) {
-            this.showMessage("Job ID: " + id + " not exits to edit!", "error");
-            return false;
-        }
-        this.setState({
-            editing: true,
-            edit_id: editIndex,
-            txt: this.state.jobs[editIndex].name,
+        getJob(id).then((job) => {
+            this.setState({
+                editing: true,
+                txt: job.title,
+                edit_id: job.id
+            });
         });
     }
 
@@ -114,7 +115,8 @@ class Jobs extends Component {
                     <Button className="btn-cancel" buttonTxt="Cancel" onClick={this.cancel} />
                 </div>
                 <Message className={this.state.messageClass} messageTxt={this.state.message}/>
-                <JobsList jobs={this.state.jobs} editJob={this.editJob} deleteJob={this.deleteJob}/>
+                <Counter count={this.state.jobs.length} />
+                <JobsList jobs={this.state.jobs} editJob={this.editJob} deleteJob={this.handleDeleteJob}/>
             </section>
         );
     }

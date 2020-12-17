@@ -18,7 +18,7 @@ export default function JobsList(props) {
                 </thead>
                 <tbody>
                 {jobs.map((job, index) => 
-                    <JobItem job={job} editJob={editJob} deleteJob={deleteJob}/>
+                    <JobItem key={job.id} job={job} editJob={editJob} deleteJob={deleteJob}/>
                 )}
                 </tbody>
             </table>
