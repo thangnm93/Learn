@@ -43,7 +43,7 @@ class Jobs extends Component {
         }
         if (this.state.editing && this.state.edit_id >= 0) {
             updateJob(this.state.edit_id, {title: text}).then(() => {
-                this.showMessage("Job ID: " + jobs[this.state.edit_id].id + " is updated!", "success");
+                this.showMessage("Job ID: " + this.state.edit_id + " is updated!", "success");
             });
             const editIndex = jobs.findIndex(job => job.id === this.state.edit_id);
             jobs[editIndex].title = text;
