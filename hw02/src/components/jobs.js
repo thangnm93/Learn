@@ -42,10 +42,11 @@ class Jobs extends Component {
             return false;
         }
         if (this.state.editing && this.state.edit_id >= 0) {
-            updateJob(this.state.edit_id, {title: text}).then(() => {
-                this.showMessage("Job ID: " + this.state.edit_id + " is updated!", "success");
+            let edit_id = this.state.edit_id;
+            updateJob(edit_id, {title: text}).then(() => {
+                this.showMessage("Job ID: " + edit_id + " is updated!", "success");
             });
-            const editIndex = jobs.findIndex(job => job.id === this.state.edit_id);
+            const editIndex = jobs.findIndex(job => job.id === edit_id);
             jobs[editIndex].title = text;
         } else {
             let job = {userId: 1, id: Date.now(), title: text, completed: false};
